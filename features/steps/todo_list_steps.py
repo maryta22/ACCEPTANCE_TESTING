@@ -34,9 +34,19 @@ def step_then_output_should_contain(context):
     for task in task_names:
         assert task in [t["task"] for t in context.tasks], f'Task "{task}" not found in the output'
 
+@then('the to-do list should contain only one "{task}"')
+def step_then_todo_list_should_contain_only_one(context, task):
+    tasks = context.manager.list_tasks()
+    task_names = [t["task"] for t in tasks]
+    assert task_names.count(task) == 1, f"Duplicate task '{task}' found in the to-do list"
+
 @when('the user marks task "{task}" as completed')
 def step_when_user_marks_task_completed(context, task):
-    context.manager.mark_task_completed(task)
+    try:
+        context.manager.mark_task_completed(task)
+        context.error_message = None
+    except ValueError as e:
+        context.error_message = str(e)
 
 @then('the to-do list should show task "{task}" as completed')
 def step_then_todo_list_should_show_task_completed(context, task):
@@ -46,6 +56,10 @@ def step_then_todo_list_should_show_task_completed(context, task):
             assert t["status"] == "Completed", f'Task "{task}" is not marked as completed'
             return
     assert False, f'Task "{task}" not found in the to-do list'
+
+@then('the system should return an error stating "{message}"')
+def step_then_system_should_return_error(context, message):
+    assert context.error_message == message, f"Expected error message '{message}', but got '{context.error_message}'"
 
 @when('the user clears the to-do list')
 def step_when_user_clears_todo_list(context):

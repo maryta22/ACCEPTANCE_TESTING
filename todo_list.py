@@ -3,6 +3,9 @@ class ToDoListManager:
         self.to_do_list = []
 
     def add_task(self, task):
+        for t in self.to_do_list:
+            if t["task"] == task:
+                return  # Evitar duplicados
         self.to_do_list.append({"task": task, "status": "Pending"})
 
     def list_tasks(self):
@@ -12,7 +15,8 @@ class ToDoListManager:
         for t in self.to_do_list:
             if t["task"] == task:
                 t["status"] = "Completed"
-                break
+                return
+        raise ValueError(f"Task '{task}' not found")
 
     def clear_list(self):
         self.to_do_list = []

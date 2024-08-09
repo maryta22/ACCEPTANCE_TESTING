@@ -30,3 +30,15 @@ Feature: To-Do List Manager
       | Pay bills    |
     When the user clears the to-do list
     Then the to-do list should be empty
+
+  Scenario: Prevent adding duplicate tasks
+  Given the to-do list contains tasks
+    | Task          |
+    | Buy groceries |
+  When the user adds a task "Buy groceries"
+  Then the to-do list should contain only one "Buy groceries"
+
+  Scenario: Prevent marking a non-existent task as completed
+  Given the to-do list is empty
+  When the user marks task "Go jogging" as completed
+  Then the system should return an error stating "Task 'Go jogging' not found"
